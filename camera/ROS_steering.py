@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import rospy, math
-from geometry_msgs.msg import Twist    
+from geometry_msgs.msg import Twist
+from adafruit_servokit import ServoKit
+import adafruit_motor.servo
 
 msg=Twist()
 #initialize kit
