@@ -11,22 +11,18 @@ def convert_trans_rot_vel_to_steering_angle(omega):
     return 12*omega+90
 
 def callback(msg):
-    #continously loops function
-    #insert throttle output
-    while not rospy.is_shutdown():
          x=msg.linear.x
          z=msg.angular.z
          steering = convert_trans_rot_vel_to_steering_angle(z)
-	 #insert steering output
-         #delete print once we confirm it works
-	 print(z)
-	 print(steering)
-
+	 return steering
 def driver():
     #subscriber gets cmd_vel values from open cv file
     rospy.init_node('car')
-    rospy.Subscriber('/cmd_vel', Twist, callback)
-    #keeps node open
+    steering=rospy.Subscriber('/cmd_vel', Twist, callback)
+    print(steering)
+    #pwm(steering)
     rospy.spin()
-
-driver()
+	
+#insert throttle
+while not rospy.is_shutdown():
+    driver()
