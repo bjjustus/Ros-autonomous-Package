@@ -1,40 +1,32 @@
 #!/usr/bin/env python
 
 import rospy, math
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist    
 
-#def __init__(self):
-    #self.speed=rospy.Subscriber('cmd_vel', Twist, callback)    
+msg=Twist()
+#initialize kit
 
-def convert_trans_rot_vel_to_steering_angle(v, omega, wheelbase):
-    if omega == 0 or v == 0:
-        return 0
-    radius = v / omega
-    return math.atan(wheelbase / radius)
+def convert_trans_rot_vel_to_steering_angle(omega):
+    #turns angular.z value into an angle
+    return 12*omega+90
 
 def callback(msg):
-    rospy.loginfo(msg)
+    #continously loops function
+    #insert throttle output
+    while not rospy.is_shutdown():
+         x=msg.linear.x
+         z=msg.angular.z
+         steering = convert_trans_rot_vel_to_steering_angle(z)
+	 #insert steering output
+         #delete print once we confirm it works
+	 print(z)
+	 print(steering)
 
-def listener():
+def driver():
+    #subscriber gets cmd_vel values from open cv file
     rospy.init_node('car')
-    wheelbase = 1
-    neutral = 370
-    PWM_max = 460
-    PWM_min = 290
-    k = 10
-    msg=Twist()
-    sub=rospy.Subscriber('/cmd_vel', Twist, callback)
-    x=msg.linear.x
-    z=msg.angular.z
-    steering = convert_trans_rot_vel_to_steering_angle(x, z, wheelbase)
-    PWM_steering = neutral + k * steering
-    #print(x)
-    if PWM_steering > PWM_max:
-        PWM_steering = PWM_max
-    elif PWM_steering < PWM_min:
-        PWM_steering = PWM_min
-	
+    rospy.Subscriber('/cmd_vel', Twist, callback)
+    #keeps node open
     rospy.spin()
 
-if __name__ == '__main__':
-     listener()
+driver()
